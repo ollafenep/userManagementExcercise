@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,6 +48,14 @@ public class UserDataController {
 	void deleteUser(@PathVariable int userId) {
 		User_data userToDelete = userRepo.findById(userId).orElseThrow();
 		userRepo.delete(userToDelete);
+	}
+	
+	@PatchMapping("/users/{userId}")
+	User_data patchUser(@PathVariable int userId, @RequestBody User_data userDto) {
+		User_data userToUpdate = userRepo.findById(userId).orElseThrow();
+		userToUpdate.setEmail(userDto.getEmail());
+		userToUpdate.setCreation_date(userDto.getCreation_date());
+		return userRepo.save(userToUpdate);
 	}
 	
 	

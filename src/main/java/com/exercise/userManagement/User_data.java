@@ -26,6 +26,12 @@ public class User_data {
 		this.creation_date = creation_date;
 	}
 
+	public User_data(String email, String creation_date) {
+		super();
+		this.email = email;
+		this.creation_date = creation_date;
+	}
+
 	public int getId() {
 		return id;
 	}
