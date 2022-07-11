@@ -46,6 +46,7 @@ public class UserDataController {
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	User_data createUser(@RequestBody User_data newUser) {
+		newUser.setCreationDate(generateDate());
 		return userRepo.save(newUser);
 	}
 	
@@ -56,12 +57,18 @@ public class UserDataController {
 	
 	@PutMapping("/users/{userId}")
 	User_data updateUser(@PathVariable int userId, @RequestBody User_data userDto) {
-		User_data userToUpdate = userRepo.findById(userId).orElseThrow();
-		userToUpdate.setName(userDto.getName());
-		userToUpdate.setSurname(userDto.getSurname());
-		userToUpdate.setEmail(userDto.getEmail());
-		userToUpdate.setCreation_date(userDto.getCreation_date());
-		return userRepo.save(userToUpdate);
+		if (userRepo.findById(userId).isPresent()) {
+			User_data userToUpdate = userRepo.findById(userId).orElse(null);
+			userToUpdate.setName(userDto.getName());
+			userToUpdate.setSurname(userDto.getSurname());
+			userToUpdate.setEmail(userDto.getEmail());
+			userToUpdate.setCreationDate(userDto.getCreationDate());
+			userToUpdate.setUpdateDate(generateDate());
+			return userRepo.save(userToUpdate);
+		}
+		userDto.setCreationDate(generateDate());
+		userDto.setUpdateDate(generateDate());
+		return userRepo.save(userDto);
 	}
 	
 	@DeleteMapping("/users/{userId}")
@@ -74,7 +81,7 @@ public class UserDataController {
 	User_data patchUser(@PathVariable int userId, @RequestBody User_data userDto) {
 		User_data userToUpdate = userRepo.findById(userId).orElseThrow();
 		userToUpdate.setEmail(userDto.getEmail());
-		userToUpdate.setCreation_date(userDto.getCreation_date());
+		userToUpdate.setUpdateDate(generateDate());
 		return userRepo.save(userToUpdate);
 	}
 	
@@ -82,18 +89,23 @@ public class UserDataController {
 	@ResponseStatus(HttpStatus.CREATED)
 	List<User_data> addUsersFromCSV(@RequestPart MultipartFile file) throws IOException {
 		String fileContent = new String(file.getBytes());
-		String pattern = "yyyy-MM-dd";
 		List<User_data> added_users = new ArrayList<>();
 		String[] usersToAdd = fileContent.split("\n");
 		for(String s: usersToAdd) {
 			String[] userData = s.split(",");
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-			String creation_date = simpleDateFormat.format(new Date());
+			String creation_date = generateDate();
 			User_data new_user = new User_data(userData[0], userData[1], userData[2], creation_date);
 			added_users.add(new_user);
 			userRepo.save(new_user);
 		}
 		return added_users;
+	}
+	
+	String generateDate() {
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String date = simpleDateFormat.format(new Date());
+		return date;
 	}
 	
 }

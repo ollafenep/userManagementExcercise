@@ -12,7 +12,8 @@ public class User_data {
 	private String name;
 	private String surname;
 	private String email;
-	private String creation_date;
+	private String creationDate;
+	private String updateDate;
 	
 	User_data() {		
 	}
@@ -22,13 +23,22 @@ public class User_data {
 		this.name = name;
 		this.surname = surname;
 		this.email = email;
-		this.creation_date = creation_date;
+		this.creationDate = creation_date;
 	}
 
-	public User_data(String email, String creation_date) {
+	public User_data(String name, String surname, String email, String creation_date, String update_date) {
+		super();
+		this.name = name;
+		this.surname = surname;
+		this.email = email;
+		this.creationDate = creation_date;
+		this.updateDate = update_date;
+	}
+
+	public User_data(String email, String update_date) {
 		super();
 		this.email = email;
-		this.creation_date = creation_date;
+		this.updateDate = update_date;
 	}
 
 	public int getId() {
@@ -63,13 +73,20 @@ public class User_data {
 		this.email = email;
 	}
 
-	public String getCreation_date() {
-		return creation_date;
+	public String getCreationDate() {
+		return creationDate;
 	}
 
-	public void setCreation_date(String creation_date) {
-		this.creation_date = creation_date;
+	public void setCreationDate(String creation_date) {
+		this.creationDate = creation_date;
 	}
 
-	
+	public String getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
+
 }
