@@ -1,5 +1,9 @@
 package com.exercise.userManagement;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,8 +13,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 @RestController
 public class UserDataController {
@@ -33,6 +44,7 @@ public class UserDataController {
 	}
 	
 	@PostMapping("/users")
+	@ResponseStatus(HttpStatus.CREATED)
 	User_data createUser(@RequestBody User_data newUser) {
 		return userRepo.save(newUser);
 	}
@@ -64,6 +76,24 @@ public class UserDataController {
 		userToUpdate.setEmail(userDto.getEmail());
 		userToUpdate.setCreation_date(userDto.getCreation_date());
 		return userRepo.save(userToUpdate);
+	}
+	
+	@RequestMapping(path = "/createUsersFromCSV", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@ResponseStatus(HttpStatus.CREATED)
+	List<User_data> addUsersFromCSV(@RequestPart MultipartFile file) throws IOException {
+		String fileContent = new String(file.getBytes());
+		String pattern = "yyyy-MM-dd";
+		List<User_data> added_users = new ArrayList<>();
+		String[] usersToAdd = fileContent.split("\n");
+		for(String s: usersToAdd) {
+			String[] userData = s.split(",");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+			String creation_date = simpleDateFormat.format(new Date());
+			User_data new_user = new User_data(userData[0], userData[1], userData[2], creation_date);
+			added_users.add(new_user);
+			userRepo.save(new_user);
+		}
+		return added_users;
 	}
 	
 }
