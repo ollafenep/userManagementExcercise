@@ -3,10 +3,11 @@ package com.exercise.userManagement;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.Data;
 
-
+@Table(name="user_data")
 @Entity
 public class User_data {
 	private @Id @GeneratedValue int id;

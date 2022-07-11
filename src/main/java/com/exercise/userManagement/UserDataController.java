@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,9 +19,16 @@ public class UserDataController {
 	public UserDataController(UserRepository repository) {
 		userRepo = repository;
 	}
-	
+
 	@GetMapping("/users")
-	Iterable<User_data> getUsers() {
+	List<User_data> getUsersByName(@RequestParam(name="name", required=false) String name, @RequestParam(name="surname", required=false) String surname) {
+		if(name != null && surname != null) {
+			return userRepo.findByNameAndSurname(name, surname);
+		} else if (name != null) {
+			return userRepo.findByName(name);
+		} else if (surname != null) {
+			return userRepo.findBySurname(surname);
+		}
 		return userRepo.findAll();
 	}
 	
@@ -57,6 +65,5 @@ public class UserDataController {
 		userToUpdate.setCreation_date(userDto.getCreation_date());
 		return userRepo.save(userToUpdate);
 	}
-	
 	
 }
