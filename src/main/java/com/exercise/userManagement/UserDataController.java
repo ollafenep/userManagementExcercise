@@ -46,7 +46,9 @@ public class UserDataController {
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	User_data createUser(@RequestBody User_data newUser) {
-		newUser.setCreationDate(generateDate());
+		if(newUser.getCreationDate() == null) {
+			newUser.setCreationDate(generateDate());
+		}
 		return userRepo.save(newUser);
 	}
 	
@@ -90,11 +92,11 @@ public class UserDataController {
 	List<User_data> addUsersFromCSV(@RequestPart MultipartFile file) throws IOException {
 		String fileContent = new String(file.getBytes());
 		List<User_data> added_users = new ArrayList<>();
-		String[] usersToAdd = fileContent.split("\n");
+		String[] usersToAdd = fileContent.split("\r\n");
 		for(String s: usersToAdd) {
 			String[] userData = s.split(",");
 			String creation_date = generateDate();
-			User_data new_user = new User_data(userData[0], userData[1], userData[2], creation_date);
+			User_data new_user = new User_data(userData[0], userData[1], userData[2], creation_date, creation_date);
 			added_users.add(new_user);
 			userRepo.save(new_user);
 		}
